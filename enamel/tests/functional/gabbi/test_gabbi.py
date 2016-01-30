@@ -20,8 +20,7 @@ import os
 
 from gabbi import driver
 
-from enamel import main
-from enamel.tests.functional.gabbi import fixtures as fixture_module
+from enamel.tests.functional.gabbi import fixtures
 
 TESTS_DIR = 'gabbits'
 
@@ -30,5 +29,5 @@ def load_tests(loader, tests, pattern):
     """Provide a TestSuite to the discovery process."""
     test_dir = os.path.join(os.path.dirname(__file__), TESTS_DIR)
     return driver.build_tests(test_dir, loader, host=None,
-                              intercept=main.create_app,
-                              fixture_module=fixture_module)
+                              intercept=fixtures.setup_app,
+                              fixture_module=fixtures)

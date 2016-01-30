@@ -16,16 +16,23 @@ import re
 import sys
 
 import flask
+from keystonemiddleware import auth_token
 from oslo_config import cfg
 
 from enamel import opts
 
 
-def create_app():
+def create_app(conf):
     app = flask.Flask(__name__)
-    # Use centralized declaration of routes to have non-global
-    # 'app'.
     _load_routes(app)
+    # Here we work around keystone middleware's desire to be brought
+    # into being via paste. Since we don't want to use paste we need
+    # to tell the middleware that our keystone config is located in
+    # a project with an oslo config.
+    if conf.api.auth_strategy == 'keystone':
+        keystone_middleware = auth_token.filter_factory(
+            {}, oslo_config_project='enamel')
+        app.wsgi_app = keystone_middleware(app.wsgi_app)
     return app
 
 
@@ -72,7 +79,8 @@ def main(args=sys.argv[1:]):
         conf.register_opts(list(options),
                            group=None if group == "DEFAULT" else group)
 
-    app = create_app()
+    app = create_app(conf)
+
     app_kwargs = {'host': conf.api.bind_address,
                   'port': conf.api.bind_port}
 
@@ -81,5 +89,6 @@ def main(args=sys.argv[1:]):
 
 def _load_routes(app):
     # NOTE(cdent): Replace with package data map?
+    # Use centralized declaration of routes to have non-global 'app'.
     app.add_url_rule('/', 'home', home, methods=['GET'])
     app.add_url_rule('/servers', 'server_boot', server_boot, methods=['POST'])
