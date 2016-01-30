@@ -24,6 +24,7 @@ from enamel.tests.functional.gabbi import fixtures as fixture_module
 
 TESTS_DIR = 'gabbits'
 
+
 # NOTE(cdent): Replace with real wsgi app factory.
 def load_app():
 
