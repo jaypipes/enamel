@@ -3,4 +3,5 @@
 .pydevproject
 *.swp
 .tox
-
+.testrepository
+enamel.egg-info
