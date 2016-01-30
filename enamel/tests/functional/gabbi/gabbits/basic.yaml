@@ -1,0 +1,26 @@
+#
+# Exploratory, confirm the world exists tests.
+# To be replaced the world exits.
+#
+
+fixtures:
+- ConfigFixture
+
+tests:
+
+    - name: get json home
+      xfail: nope not gonna do it
+      GET: /
+      status: 200
+      response_headers:
+          # NOTE(cdent): There's noise on the interwebs that this
+          # should be application/home+json to follow others
+          # standards.
+          content-type: application/json-home
+      response_json_paths:
+          # this is made up and not expected to be correct
+          $.resources['http://docs.openstack.org/api/openstack/1/rel/servers'].href: /servers
+          $.resources['http://docs.openstack.org/api/openstack/1/rel/server'].href_template: /servers/{server_id}
+
+
+
