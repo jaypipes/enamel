@@ -9,8 +9,8 @@ fixtures:
 tests:
 
     - name: get json home
-      xfail: nope not gonna do it
       GET: /
+      xfail: this will get the wrong content type and content
       status: 200
       response_headers:
           # NOTE(cdent): There's noise on the interwebs that this
