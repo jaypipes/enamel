@@ -1,0 +1,22 @@
+#
+# Test the servers route.
+#
+
+fixtures:
+- ConfigFixture
+
+tests:
+
+    - name: check post
+      desc: this is a round tripper for dev purposes
+      POST: /servers
+      request_headers:
+          content-type: application/json
+      data:
+          type: the awesome kind
+          name: super cool
+      response_headers:
+          content-type: application/json
+      response_json_paths:
+          $.type: the awesome kind
+          $.name: super cool
