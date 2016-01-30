@@ -1,0 +1,15 @@
+#
+# Provide that keystone is intercepting requests.
+#
+
+fixtures:
+- AuthedConfigFixture
+
+tests:
+
+    - name: 401 happens
+      GET: /
+      status: 401
+      response_headers:
+          www-authenticate: Keystone uri='https://127.0.0.1:35357'
+
