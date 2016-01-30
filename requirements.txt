@@ -1,0 +1,8 @@
+Flask
+keystonemiddleware
+oslo.config
+python-cinderclient
+python-glanceclient
+python-novaclient
+python-neutronclient
+taskflow
