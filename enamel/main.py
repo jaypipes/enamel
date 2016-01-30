@@ -21,7 +21,12 @@ from oslo_config import cfg
 from enamel import opts
 
 
-app = flask.Flask(__name__)
+def create_app():
+    app = flask.Flask(__name__)
+    # Use centralized declaration of routes to have non-global
+    # 'app'.
+    _load_routes(app)
+    return app
 
 
 def create_link_object(urls):
@@ -42,22 +47,20 @@ def generate_resource_data(resources):
     return data
 
 
-@app.route('/', methods=['GET'])
-def api_root():
+def home():
     pat = re.compile("^\/[^\/]*?$")
 
     resources = []
-    for url in app.url_map.iter_rules():
+    for url in flask.current_app.url_map.iter_rules():
         if pat.match(str(url)):
             resources.append(url)
 
     return flask.jsonify(resources=generate_resource_data(resources))
 
 
-@app.route('/servers', methods=['POST'])
 def server_boot():
     data = flask.request.get_json()
-    # TODO: Call the task workflow here and return a link to the task
+    # TODO(cdent): Call the task workflow here and return a link to the task
     task_return = data
     return flask.jsonify(task_return)
 
@@ -67,8 +70,16 @@ def main(args=sys.argv[1:]):
     conf(args, project='enamel')
     for group, options in opts.list_opts():
         conf.register_opts(list(options),
-                group=None if group == "DEFAULT" else group)
+                           group=None if group == "DEFAULT" else group)
+
+    app = create_app()
     app_kwargs = {'host': conf.api.bind_address,
                   'port': conf.api.bind_port}
 
     app.run(**app_kwargs)
+
+
+def _load_routes(app):
+    # NOTE(cdent): Replace with package data map?
+    app.add_url_rule('/', 'home', home, methods=['GET'])
+    app.add_url_rule('/servers', 'server_boot', server_boot, methods=['POST'])
