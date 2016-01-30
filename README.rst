@@ -41,26 +41,28 @@ There are a few reasons we chose not to use Heat for this purpose:
 
 * Heat's API is platform-layer-centric
   
-By this we mean that the API's resources (stacks, stack templates, software
-configurations, etc) are all designed around an end-user who wishes to describe
-their virtual machine deployment topology and operate on that topology of
-resources as a unit.
+  By this we mean that the API's resources (stacks, stack templates,
+  software configurations, etc) are all designed around an end-user
+  who wishes to describe their virtual machine deployment topology and
+  operate on that topology of resources as a unit.
 
-Enamel's API is plumbing-layer-centric, by which we mean that Enamel is
-concerned with creating user-friendly ways of performing multiple low-level,
-granular steps of a well-known process in a controlled fashion.
+  Enamel's API is plumbing-layer-centric, by which we mean that
+  Enamel is concerned with creating user-friendly ways of performing
+  multiple low-level, granular steps of a well-known process in a
+  controlled fashion.
 
 * Heat's API is declarative
 
-Porcelain APIs are imperative. They wrap lower-level granular plumbing calls in
-a single user-friendly call.
+  Porcelain APIs are imperative. They wrap lower-level granular
+  plumbing calls in a single user-friendly call.
 
 * Heat's API has stateful objects
 
-Enamel's only stateful resource object is a Task, which allows the user of
-Enamel's API to receive notification and query for an event timeline for the
-porcelain API command's execution. Enamel does not and will not have any concept
-of saved "macros" in the sense of Heat's templates and software configurations.
+  Enamel's only stateful resource object is a Task, which allows the
+  user of Enamel's API to receive notification and query for an event
+  timeline for the porcelain API command's execution. Enamel does not
+  and will not have any concept of saved "macros" in the sense of
+  Heat's templates and software configurations.
 
 Architecture
 ------------
