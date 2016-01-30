@@ -22,4 +22,8 @@ def list_opts():
             cfg.StrOpt('bind_address',
                        default='0.0.0.0',
                        help='The listen IP for the Enamel API server.'),
+            cfg.StrOpt('auth_strategy',
+                       default='keystone',
+                       help='The authentication strategy. '
+                            'Set to None to disable auth.'),
         ))]
