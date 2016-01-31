@@ -14,7 +14,7 @@ tests:
       status: 200
       response_headers:
           # NOTE(cdent): There's noise on the interwebs that this
-          # should be application/home+json to follow others
+          # should be application/home+json to follow other
           # standards.
           content-type: application/json-home
       response_json_paths:
