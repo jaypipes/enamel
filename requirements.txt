@@ -1,6 +1,7 @@
 Flask
 keystonemiddleware
 oslo.config
+oslo.log
 python-cinderclient
 python-glanceclient
 python-novaclient

@@ -8,8 +8,9 @@ fixtures:
 tests:
 
     - name: 401 happens
+      desc: by testing for http instead of https we confirm config override
       GET: /
       status: 401
       response_headers:
-          www-authenticate: Keystone uri='https://127.0.0.1:35357'
+          www-authenticate: Keystone uri='http://127.0.0.1:35357'
 
