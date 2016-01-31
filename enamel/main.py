@@ -11,14 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import re
 import sys
 
 import flask
 from keystonemiddleware import auth_token
 from oslo_config import cfg
 
+from enamel.api import handlers
 from enamel import opts
 
 
@@ -34,42 +33,6 @@ def create_app(conf):
             {}, oslo_config_project='enamel')
         app.wsgi_app = keystone_middleware(app.wsgi_app)
     return app
-
-
-def create_link_object(urls):
-    links = []
-    for url in urls:
-        links.append({"rel": "self",
-                      "href": os.path.join(flask.request.url_root, url)})
-    return links
-
-
-def generate_resource_data(resources):
-    data = []
-    for resource in resources:
-        item = {}
-        item['name'] = str(resource).split('/')[-1]
-        item['links'] = create_link_object([str(resource)[1:]])
-        data.append(item)
-    return data
-
-
-def home():
-    pat = re.compile("^\/[^\/]*?$")
-
-    resources = []
-    for url in flask.current_app.url_map.iter_rules():
-        if pat.match(str(url)):
-            resources.append(url)
-
-    return flask.jsonify(resources=generate_resource_data(resources))
-
-
-def server_boot():
-    data = flask.request.get_json()
-    # TODO(cdent): Call the task workflow here and return a link to the task
-    task_return = data
-    return flask.jsonify(task_return)
 
 
 def main(args=sys.argv[1:]):
@@ -90,5 +53,6 @@ def main(args=sys.argv[1:]):
 def _load_routes(app):
     # NOTE(cdent): Replace with package data map?
     # Use centralized declaration of routes to have non-global 'app'.
-    app.add_url_rule('/', 'home', home, methods=['GET'])
-    app.add_url_rule('/servers', 'server_boot', server_boot, methods=['POST'])
+    app.add_url_rule('/', 'home', handlers.home, methods=['GET'])
+    app.add_url_rule('/servers', 'server_boot', handlers.server_boot,
+                     methods=['POST'])

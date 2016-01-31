@@ -6,3 +6,5 @@
 .tox
 .testrepository
 enamel.egg-info
+cover
+.coverage

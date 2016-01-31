@@ -21,6 +21,3 @@ tests:
           # this is made up and not expected to be correct
           $.resources['http://docs.openstack.org/api/openstack/1/rel/servers'].href: /servers
           $.resources['http://docs.openstack.org/api/openstack/1/rel/server'].href_template: /servers/{server_id}
-
-
-
