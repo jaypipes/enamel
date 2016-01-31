@@ -67,10 +67,69 @@ There are a few reasons we chose not to use Heat for this purpose:
 Architecture
 ------------
 
-TODO
+Enamel has a number of high-level design goals:
+
+* Model sets of related actions into task flows that can be easily understood,
+  instrumented, debugged, and extended
+* Have stateless worker services that can grab a task flow and execute,
+  restart, and prioritize whole or partial task flows
+
+There are two primary components in the Enamel architecture. A set of stateless
+HTTP/WSGI services provide a REST API for end users to call and a set of
+stateless worker services that execute related actions.
+
+A typical event flow for Enamel looks like the following:
+
+1) User issues call to REST API to perform an action (e.g. POST /servers to
+   create one or more server instances)
+
+2) Enamel API service grabs the authentication credentials used in the HTTP
+   request and communicates with the Barbican secure key storage service,
+   asking it to return a key for the user credentials. If Barbican has the key,
+   great. If not, Enamel creates a key for the user credentials. This secure
+   key is essential to avoid storing user credentials or passing user
+   credentials between components. Since an Enamel task can take a long time to
+   execute, we need a method of recreating a Keystone session/token in case an
+   initial token expires.
+
+3) Enamel API service creates a Task resource in a backend data store and
+   returns the task ID to the caller as a 202 Accepted response. The Task
+   resource will contain the Barbican key created in step 2.
+
+4) Enamel API service serializes the Task resource into a message format and
+   publishes the message to a topical message queue exchange. The topic for the
+   exchange will typically be the type of the Task. This means that deployers
+   of Enamel may spin up different numbers of worker processes for different
+   types of tasks.
+
+5) Enamel worker services consume Task messages from the topical queues that
+   are listening on. The Task message will contain some information on what
+   stage or subtask the Task is currently on, whether or not the stage has been
+   restarted or retried, and the executable actions to take for the Task.
+
+6) Upon completing the entire task or a set of subtasks in the task, the worker
+   service process writes to a backing data store the time the subtask took.
+
+7) The end user, in the meantime, will be able to poll the API service to
+   determine the latest state of the API call.
 
 REST API
 --------
+
+`POST /servers`
+...............
+
+Creates one or more server instances in an OpenStack cloud.
+
+`GET /tasks`
+............
+
+Returns the currently running tasks for the authenticated user.
+
+`GET /tasks/{id}`
+.................
+
+Returns details about a specific task.
 
 Principles
 ~~~~~~~~~~
