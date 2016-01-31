@@ -1,4 +1,10 @@
 coverage
 gabbi
+mock
 os-testr
+oslotest
+oslosphinx
+sphinx
+testresources
+testscenarios
 testtools
