@@ -10,12 +10,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from gabbi import fixture
+from keystonemiddleware import auth_token
 
 from enamel import main
-from enamel import opts
-
-from gabbi import fixture
-from oslo_config import cfg
 
 
 # NOTE(cdent): Workaround difficulties using config as a fixture.
@@ -42,17 +40,12 @@ class BaseConfigFixture(fixture.GabbiFixture):
         self.override_config()
 
     def override_config(self):
-        pass
+        self.conf.set_override('debug', True)
+        self.conf.set_override('use_stderr', True)
 
     def _manage_conf(self):
         global CONF
-
-        conf = cfg.ConfigOpts()
-        conf([], project='enamel')
-        for group, options in opts.list_opts():
-            conf.register_opts(list(options),
-                               group=None if group == "DEFAULT" else group)
-
+        conf = main.prepare_service()
         CONF = self.conf = conf
 
     def stop_fixture(self):
@@ -63,6 +56,7 @@ class ConfigFixture(BaseConfigFixture):
 
     def override_config(self):
         """Turn off keystone."""
+        super(ConfigFixture, self).override_config()
         self.conf.set_override('auth_strategy', None, 'api')
 
 
@@ -74,4 +68,7 @@ class AuthedConfigFixture(BaseConfigFixture):
 
     def override_config(self):
         """Allow keystone to run, and set defaults."""
-        pass
+        super(AuthedConfigFixture, self).override_config()
+        self.conf.register_opts(auth_token._OPTS, group='keystone_authtoken')
+        self.conf.set_override('auth_uri', 'http://127.0.0.1:35357',
+                               group='keystone_authtoken')

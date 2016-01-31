@@ -16,9 +16,13 @@ import sys
 import flask
 from keystonemiddleware import auth_token
 from oslo_config import cfg
+from oslo_log import log as logging
 
 from enamel.api import handlers
 from enamel import opts
+
+
+LOG = logging.getLogger(__name__)
 
 
 def create_app(conf):
@@ -29,21 +33,33 @@ def create_app(conf):
     # to tell the middleware that our keystone config is located in
     # a project with an oslo config.
     if conf.api.auth_strategy == 'keystone':
-        keystone_middleware = auth_token.filter_factory(
-            {}, oslo_config_project='enamel')
-        app.wsgi_app = keystone_middleware(app.wsgi_app)
+        auth_conf = {
+            'oslo_config_project': 'enamel',
+            'log_name': __name__,
+            'oslo_config_config': conf,
+        }
+        app.wsgi_app = auth_token.AuthProtocol(app.wsgi_app, auth_conf)
     return app
 
 
-def main(args=sys.argv[1:]):
+def prepare_service(args=None):
+    if args is None:
+        args = []
     conf = cfg.ConfigOpts()
+    logging.register_options(conf)
     conf(args, project='enamel')
+    logging.setup(conf, 'enamel')
     for group, options in opts.list_opts():
         conf.register_opts(list(options),
                            group=None if group == "DEFAULT" else group)
 
-    app = create_app(conf)
+    return conf
 
+
+def main(args=sys.argv[1:]):
+    conf = prepare_service(args)
+
+    app = create_app(conf)
     app_kwargs = {'host': conf.api.bind_address,
                   'port': conf.api.bind_port}
 
