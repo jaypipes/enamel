@@ -103,9 +103,9 @@ A typical event flow for Enamel looks like the following:
    types of tasks.
 
 5) Enamel worker services consume Task messages from the topical queues that
-   are listening on. The Task message will contain some information on what
-   stage or subtask the Task is currently on, whether or not the stage has been
-   restarted or retried, and the executable actions to take for the Task.
+   they are listening on. The Task message will contain some information on
+   what stage or subtask the Task is currently on, whether or not the stage has
+   been restarted or retried, and the executable actions to take for the Task.
 
 6) Upon completing the entire task or a set of subtasks in the task, the worker
    service process writes to a backing data store the time the subtask took.
