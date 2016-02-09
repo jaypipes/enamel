@@ -1,0 +1,31 @@
+enable_service enamel-api
+
+# Service Catalog
+# NOTE(cdent): This will need some real stuff at some point.
+ENAMEL_SERVICE_TYPE=enamel
+ENAMEL_SERVICE_NAME=enamel
+
+# Default Directories
+ENAMEL_DIR=$DEST/enamel
+ENAMEL_CONF_DIR=/etc/enamel
+ENAMEL_CONF=$ENAMEL_CONF_DIR/enamel.conf
+ENAMEL_AUTH_CACHE_DIR=${ENAMEL_AUTH_CACHE_DIR:-/var/cache/enamel}
+ENAMEL_WSGI_DIR=${ENAMEL_WSGI_DIR:-/var/www/enamel}
+
+# Control use of mod_wsgi
+ENAMEL_USE_MOD_WSGI=${ENAMEL_USE_MOD_WSGI:-${ENABLE_HTTPD_MOD_WSGI_SERVICES}}
+
+# Vary bin directory dependent on use of virtualenv
+if [[ ${USE_VENV} = True ]]; then
+    PROJECT_VENV["enamel"]=${ENAMEL_DIR}.venv
+    ENAMEL_BIN_DIR=${PROJECT_VENV["enamel"]}/bin
+else
+    ENAMEL_BIN_DIR=$(get_python_exec_prefix)
+fi
+
+# Control HTTP setings
+ENAMEL_SERVICE_PROTOCOL=http
+# NOTE(cdent): If you are not using mod wsgi you need to set port!
+ENAMEL_SERVICE_PORT=${ENAMEL_SERVICE_PORT:-5050}
+ENAMEL_SERVICE_PREFIX=${ENAMEL_SERVICE_PREFIX:-/${ENAMEL_SERVICE_TYPE}}
+ENAMEL_SERVICE_HOST=$SERVICE_HOST
