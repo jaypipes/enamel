@@ -17,7 +17,7 @@
 # To enable enamel add the following to the localrc of local.conf:
 # NOTE(cdent): Update this to openstack when the time comes.
 #
-#   enable_plugin gnocchi https://github.com/jaypipes/enamel
+#   enable_plugin enamel https://github.com/jaypipes/enamel
 #
 # This will turn on the enamel-api service.
 
@@ -66,7 +66,7 @@ function enamel_service_url {
 
 function create_enamel_accounts {
     if is_service_enabled key && is_service_enabled enamel-api; then
-        create_service_user "gnocchi"
+        create_service_user "enamel"
 
         if [[ "$KEYSTONE_CATALOG_BACKEND" = 'sql' ]]; then
             local enamel_service=$(get_or_create_service $ENAMEL_SERVICE_NAME \
@@ -142,7 +142,7 @@ function start_enamel {
             enable_apache_site enamel
             restart_apache_server
             # NOTE(chdent): At the moment this is very noisy as it
-            # will tail the entire apache logs, not just the gnocchi
+            # will tail the entire apache logs, not just the enamel
             # parts. If you don't like this either USE_SCREEN=False
             # or moan at cdent to add support for PORT.
             tail_log enamel-error /var/log/$APACHE_NAME/error[_\.]log
