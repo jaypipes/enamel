@@ -42,7 +42,7 @@ class Task(Base):
     params = Column(Text, nullable=False)
     created_at = Column(DateTime, default=timeutils.utcnow)
     updated_at = Column(DateTime, default=timeutils.utcnow,
-            onupdate=timeutils.utcnow)
+                        onupdate=timeutils.utcnow)
     ended_at = Column(DateTime)
 
 
@@ -56,5 +56,5 @@ class TaskItem(Base):
     task_id = Column(Integer, ForeignKey('tasks.id'))
     created_at = Column(DateTime, default=timeutils.utcnow)
     updated_at = Column(DateTime, default=timeutils.utcnow,
-            onupdate=timeutils.utcnow)
+                        onupdate=timeutils.utcnow)
     ended_at = Column(DateTime)

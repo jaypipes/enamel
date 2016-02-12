@@ -19,9 +19,9 @@ from alembic import command as alembic_command
 from alembic import config as alembic_config
 from alembic import migration as alembic_migration
 from alembic import util as alembic_util
-import six
 from oslo_config import cfg
 from oslo_db import options as db_options
+import six
 
 from enamel.db import utils as db_utils
 from enamel import opts
@@ -40,14 +40,18 @@ def _version(conf):
 
 
 def _revision(conf):
-    return do_alembic_command(conf, 'revision',
-            message=conf.enamel_config.command.message,
-            autogenerate=conf.enamel_config.command.autogenerate)
+    return do_alembic_command(
+        conf, 'revision',
+        message=conf.enamel_config.command.message,
+        autogenerate=conf.enamel_config.command.autogenerate
+    )
 
 
 def _stamp(conf):
-    return do_alembic_command(conf, 'stamp',
-            revision=conf.enamel_config.command.revision)
+    return do_alembic_command(
+        conf, 'stamp',
+        revision=conf.enamel_config.command.revision
+    )
 
 
 def do_alembic_command(config, cmd, *args, **kwargs):
@@ -59,7 +63,7 @@ def do_alembic_command(config, cmd, *args, **kwargs):
 
 def get_alembic_config():
     return alembic_config.Config(os.path.join(os.path.dirname(__file__),
-        'alembic.ini'))
+                                              'alembic.ini'))
 
 
 def add_command_parsers(subparsers):
