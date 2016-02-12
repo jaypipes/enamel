@@ -1,7 +1,10 @@
 Flask
+alembic
 keystonemiddleware
 oslo.config
+oslo.db
 oslo.log
+oslo.utils
 python-cinderclient
 python-glanceclient
 python-novaclient

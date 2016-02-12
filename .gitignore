@@ -8,3 +8,4 @@
 enamel.egg-info
 cover
 .coverage
+doc/build/*
