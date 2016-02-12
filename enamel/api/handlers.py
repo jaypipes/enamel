@@ -16,6 +16,31 @@ import re
 
 import flask
 
+from enamel.api import version
+
+
+def set_version():
+    """A before_request function to set microversion."""
+    try:
+        flask.g.request_version = version.extract_version(
+            flask.request.headers)
+    except ValueError:  # as exc:
+        # TODO(cdent): raise a proper 406
+        raise
+
+
+def send_version(response):
+    """An after_request function to send microversion headers."""
+    vary = response.headers.get('vary')
+    header = version.Version.header
+    value = flask.g.request_version
+    if vary:
+        response.headers['vary'] = '%s, %s' % (vary, version.Version.header)
+    else:
+        response.headers['vary'] = version.Version.header
+    response.headers[header] = value
+    return response
+
 
 def create_link_object(urls):
     links = []

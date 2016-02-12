@@ -11,11 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enamel.tests.unit import base
+import testtools
 
 
-class TestNull(base.TestCase):
-
-    def test_stub(self):
-        # to hold a place for confirming unit tests
-        self.assertTrue(True)
+class TestCase(testtools.TestCase):
+    pass
