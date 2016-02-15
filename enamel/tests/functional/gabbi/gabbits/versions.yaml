@@ -1,0 +1,56 @@
+#
+# Confirm the microversion handling is starting to happen.
+#
+
+fixtures:
+- ConfigFixture
+
+tests:
+    - name: default version
+      desc: no header sent
+      GET: /
+      request_headers:
+        content-type: application/json
+      response_headers:
+        vary: /OpenStack-enamel-API-Version/
+        openstack-enamel-api-version: '0.1'
+
+    - name: latest version
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-enamel-api-version: latest
+      response_headers:
+        vary: /OpenStack-enamel-API-Version/
+        openstack-enamel-api-version: '1.0'
+
+    - name: specific version
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-enamel-api-version: '1.0'
+      response_headers:
+        vary: /OpenStack-enamel-API-Version/
+        openstack-enamel-api-version: '1.0'
+
+    - name: invalid version number
+      xfail: 406 handling does not exist yet
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-enamel-api-version: '0.5'
+      response_headers:
+        vary: /OpenStack-enamel-API-Version/
+        openstack-enamel-api-version: '0.1'
+      status: 406
+
+    - name: invalid version string
+      xfail: 406 handling does not exist yet
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-enamel-api-version: cow
+      response_headers:
+        vary: /OpenStack-enamel-API-Version/
+        openstack-enamel-api-version: '0.1'
+      status: 406

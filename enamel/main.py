@@ -27,6 +27,7 @@ LOG = logging.getLogger(__name__)
 
 def create_app(conf):
     app = flask.Flask(__name__)
+    _load_request_handlers(app)
     _load_routes(app)
     # Here we work around keystone middleware's desire to be brought
     # into being via paste. Since we don't want to use paste we need
@@ -72,3 +73,14 @@ def _load_routes(app):
     app.add_url_rule('/', 'home', handlers.home, methods=['GET'])
     app.add_url_rule('/servers', 'server_boot', handlers.server_boot,
                      methods=['POST'])
+
+
+def _load_request_handlers(app):
+    # NOTE(cdent): This avoids the intrusion of 'app' into the
+    # handlers module. Which may not actually matter. Depends on our
+    # thoughts about all of flasks global hoopla.
+    # We assume here that we are the first thing to mess with
+    # before_request_funcs and after_request_funcs. This is true if
+    # the before_request and after_request decorators are not used.
+    app.before_request_funcs[None] = [handlers.set_version]
+    app.after_request_funcs[None] = [handlers.send_version]
