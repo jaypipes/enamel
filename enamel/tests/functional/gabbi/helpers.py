@@ -10,10 +10,17 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import fixtures
 from gabbi import fixture
 from keystonemiddleware import auth_token
 
-from enamel import main
+
+# Override real microversion versions for tests.
+MOCK_VERSIONS = [
+    '0.1',
+    '0.9',
+    '1.0',
+]
 
 
 # NOTE(cdent): Workaround difficulties using config as a fixture.
@@ -25,6 +32,7 @@ CONF = None
 
 
 def setup_app():
+    from enamel import main
     global CONF
     return main.create_app(CONF)
 
@@ -36,6 +44,9 @@ class BaseConfigFixture(fixture.GabbiFixture):
         self.conf = None
 
     def start_fixture(self):
+        self.version_fixture = fixtures.MonkeyPatch(
+            'enamel.api.version.VERSIONS', MOCK_VERSIONS)
+        self.version_fixture.setUp()
         self._manage_conf()
         self.override_config()
 
@@ -44,11 +55,13 @@ class BaseConfigFixture(fixture.GabbiFixture):
         self.conf.set_override('use_stderr', True)
 
     def _manage_conf(self):
+        from enamel import main
         global CONF
         conf = main.prepare_service()
         CONF = self.conf = conf
 
     def stop_fixture(self):
+        self.version_fixture.cleanUp()
         self.conf.reset()
 
 

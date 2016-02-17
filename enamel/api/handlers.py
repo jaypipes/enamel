@@ -32,12 +32,12 @@ def set_version():
 def send_version(response):
     """An after_request function to send microversion headers."""
     vary = response.headers.get('vary')
-    header = version.Version.header
+    header = version.Version.HEADER
     value = flask.g.request_version
     if vary:
-        response.headers['vary'] = '%s, %s' % (vary, version.Version.header)
+        response.headers['vary'] = '%s, %s' % (vary, header)
     else:
-        response.headers['vary'] = version.Version.header
+        response.headers['vary'] = header
     response.headers[header] = value
     return response
 

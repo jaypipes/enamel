@@ -1,5 +1,6 @@
 coverage
 gabbi
+fixtures
 mock
 os-testr
 oslotest
