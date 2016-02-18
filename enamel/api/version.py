@@ -21,8 +21,6 @@ SERVICE_TYPE = 'enamel'
 # The Canonical Version List
 VERSIONS = [
     '0.1',
-    '0.9',
-    '1.0',
 ]
 
 
@@ -34,17 +32,25 @@ def min_version_string():
     return VERSIONS[0]
 
 
-def extract_version(headers):
-    version_string = headers.get(Version.header.lower(),
-                                 min_version_string())
-    request_version = Version.parse_version_string(version_string)
-    # We need a version that is in VERSION and within MIX and MAX.
-    # This gives us the option to administratively disable a
-    # version if we really need to.
-    if (str(request_version) in VERSIONS and
-            MIN_VERSION <= request_version <= MAX_VERSION):
-        return request_version
-    raise ValueError('Unacceptable version header: %s' % version_string)
+def parse_version_string(version_string):
+    """Turn a version string into a Version
+
+    :param version_string: A string of two numerals: X.Y
+    :returns: a Version
+    :raises: ValueError
+    """
+    if version_string == 'latest':
+        version_string = max_version_string()
+    try:
+        # The combination of int and a limited split with the
+        # named tuple means that this incantation will raise
+        # ValueError or TypeError when the incoming data is
+        # poorly formed but will, however, naturally adapt to
+        # extraneous whitespace.
+        return Version(*(int(value) for value
+                         in version_string.split('.', 1)))
+    except (ValueError, TypeError):
+        raise ValueError('invalid version string: %s' % version_string)
 
 
 class Version(collections.namedtuple('Version', 'major minor')):
@@ -53,34 +59,37 @@ class Version(collections.namedtuple('Version', 'major minor')):
     Since it is a tuple is automatically comparable.
     """
 
-    header = 'OpenStack-%s-API-Version' % SERVICE_TYPE
+    HEADER = 'OpenStack-%s-API-Version' % SERVICE_TYPE
+
+    MIN_VERSION = None
+    MAX_VERSION = None
 
     def __str__(self):
         return '%s.%s' % (self.major, self.minor)
 
-    @staticmethod
-    def parse_version_string(version_string):
-        """Turn a version string into a Version
+    @property
+    def max_version(self):
+        if not self.MAX_VERSION:
+            self.MAX_VERSION = parse_version_string(max_version_string())
+        return self.MAX_VERSION
 
-        :param version_string: A string of two numerals: X.Y
-        :returns: a Version
-        :raises: ValueError
-        """
-        if version_string == 'latest':
-            version_string = max_version_string()
-        try:
-            # The combination of int and a limited split with the
-            # named tuple means that this incantation will raise
-            # ValueError or TypeError when the incoming data is
-            # poorly formed but will, however, naturally adapt to
-            # extraneous whitespace.
-            return Version(*(int(value) for value
-                             in version_string.split('.', 1)))
-        except (ValueError, TypeError):
-            raise ValueError('invalid version string: %s' % version_string)
+    @property
+    def min_version(self):
+        if not self.MIN_VERSION:
+            self.MIN_VERSION = parse_version_string(min_version_string())
+        return self.MIN_VERSION
+
+    def in_window(self):
+        return self.min_version <= self <= self.max_version
 
 
-# Python is a bit lame. We need these down here after the class is
-# defined.
-MIN_VERSION = Version.parse_version_string(min_version_string())
-MAX_VERSION = Version.parse_version_string(max_version_string())
+def extract_version(headers):
+    version_string = headers.get(Version.HEADER.lower(),
+                                 min_version_string())
+    request_version = parse_version_string(version_string)
+    # We need a version that is in VERSION and within MIX and MAX.
+    # This gives us the option to administratively disable a
+    # version if we really need to.
+    if (str(request_version) in VERSIONS and request_version.in_window()):
+        return request_version
+    raise ValueError('Unacceptable version header: %s' % version_string)
