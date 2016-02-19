@@ -1,6 +1,6 @@
 Flask
 alembic
-keystonemiddleware
+keystonemiddleware>=4.3.0
 oslo.config
 oslo.db
 oslo.log
