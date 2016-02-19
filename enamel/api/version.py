@@ -79,8 +79,12 @@ class Version(collections.namedtuple('Version', 'major minor')):
             self.MIN_VERSION = parse_version_string(min_version_string())
         return self.MIN_VERSION
 
-    def in_window(self):
-        return self.min_version <= self <= self.max_version
+    def matches(self, min_version=None, max_version=None):
+        if min_version is None:
+            min_version = self.min_version
+        if max_version is None:
+            max_version = self.max_version
+        return min_version <= self <= max_version
 
 
 def extract_version(headers):
@@ -90,6 +94,6 @@ def extract_version(headers):
     # We need a version that is in VERSION and within MIX and MAX.
     # This gives us the option to administratively disable a
     # version if we really need to.
-    if (str(request_version) in VERSIONS and request_version.in_window()):
+    if (str(request_version) in VERSIONS and request_version.matches()):
         return request_version
     raise ValueError('Unacceptable version header: %s' % version_string)
