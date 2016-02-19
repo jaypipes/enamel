@@ -35,7 +35,6 @@ def create_app(conf):
     # a project with an oslo config.
     if conf.api.auth_strategy == 'keystone':
         auth_conf = {
-            'oslo_config_project': 'enamel',
             'log_name': __name__,
             'oslo_config_config': conf,
         }
