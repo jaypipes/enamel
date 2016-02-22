@@ -15,8 +15,34 @@ import os
 import re
 
 import flask
+import httpexceptor
 
 from enamel.api import version
+
+
+def handle_error(error):
+    """Trap and HTTPException and package it for display"""
+    # This current implementation is based on the httpexceptor model
+    # which provides a very simple way to raise an HTTP<some status>
+    # anywhere. This takes that exception, extracts meaning from it
+    # and puts it in the format of an OpenStack errors object.
+
+    status_code, title = error.status.split(' ', 1)
+    # httpexcepter body() is a one item list of bytestring
+    body_detail = error.body()[0].decode('utf-8')
+
+    response = flask.jsonify({'errors': [{
+        'status': int(status_code),
+        'title': title,
+        'detail': body_detail,
+    }]})
+
+    response.status = error.status
+    for header, value in error.headers():
+        if header.lower() == 'content-type':
+            continue
+        response.headers[header] = value
+    return response
 
 
 def set_version():
@@ -24,21 +50,23 @@ def set_version():
     try:
         flask.g.request_version = version.extract_version(
             flask.request.headers)
-    except ValueError:  # as exc:
-        # TODO(cdent): raise a proper 406
-        raise
+    except ValueError as exc:
+        flask.g.request_version = version.parse_version_string(
+            version.min_version_string())
+        raise httpexceptor.HTTP406('unable to use provided version: %s' % exc)
 
 
 def send_version(response):
     """An after_request function to send microversion headers."""
     vary = response.headers.get('vary')
     header = version.Version.HEADER
-    value = flask.g.request_version
-    if vary:
-        response.headers['vary'] = '%s, %s' % (vary, header)
-    else:
-        response.headers['vary'] = header
-    response.headers[header] = value
+    value = flask.g.get('request_version')
+    if value:
+        if vary:
+            response.headers['vary'] = '%s, %s' % (vary, header)
+        else:
+            response.headers['vary'] = header
+        response.headers[header] = value
     return response
 
 

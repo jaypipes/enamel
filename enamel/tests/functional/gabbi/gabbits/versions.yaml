@@ -34,7 +34,6 @@ tests:
         openstack-enamel-api-version: '1.0'
 
     - name: invalid version number
-      xfail: 406 handling does not exist yet
       GET: /
       request_headers:
         content-type: application/json
@@ -42,10 +41,13 @@ tests:
       response_headers:
         vary: /OpenStack-enamel-API-Version/
         openstack-enamel-api-version: '0.1'
+        content-type: application/json
       status: 406
+      response_json_paths:
+          $.errors[0].status: 406
+          $.errors[0].title: Not Acceptable
 
     - name: invalid version string
-      xfail: 406 handling does not exist yet
       GET: /
       request_headers:
         content-type: application/json
@@ -53,4 +55,9 @@ tests:
       response_headers:
         vary: /OpenStack-enamel-API-Version/
         openstack-enamel-api-version: '0.1'
+        content-type: application/json
       status: 406
+      response_json_paths:
+          $.errors[0].status: 406
+          $.errors[0].title: Not Acceptable
+          $.errors[0].detail: "406 Not Acceptable: unable to use provided version: invalid version string: cow"
