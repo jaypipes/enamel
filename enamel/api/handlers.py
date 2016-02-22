@@ -11,17 +11,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# NOTE(cdent): We need a refactoring to break this into smaller
+# modules soon.
+
 import os
 import re
 
 import flask
 import httpexceptor
+from oslo_utils import uuidutils
 
 from enamel.api import version
 
 
+REQUEST_ID_HEADER = 'Openstack-Request-ID'
+
+
 def handle_error(error):
-    """Trap and HTTPException and package it for display"""
+    """Trap an HTTPException and package it for display"""
     # This current implementation is based on the httpexceptor model
     # which provides a very simple way to raise an HTTP<some status>
     # anywhere. This takes that exception, extracts meaning from it
@@ -33,6 +40,7 @@ def handle_error(error):
 
     response = flask.jsonify({'errors': [{
         'status': int(status_code),
+        'request_id': flask.g.request_id,
         'title': title,
         'detail': body_detail,
     }]})
@@ -42,6 +50,22 @@ def handle_error(error):
         if header.lower() == 'content-type':
             continue
         response.headers[header] = value
+    return response
+
+
+def handle_404(error):
+    """Transform a Flask 404 into our error handling flow."""
+    return handle_error(httpexceptor.HTTP404(error.description))
+
+
+def set_request_id():
+    """A before_request function to set required-id."""
+    flask.g.request_id = uuidutils.generate_uuid()
+
+
+def send_request_id(response):
+    """An after_request_function to send request-id header."""
+    response.headers[REQUEST_ID_HEADER] = flask.g.request_id
     return response
 
 
