@@ -1,0 +1,19 @@
+# Make sure we get a request id
+
+fixtures:
+- ConfigFixture
+
+tests:
+
+- name: request id present
+  GET: /
+  response_headers:
+      openstack-request-id: /[a-f0-9-]{36}/
+
+- name: error gets a request id
+  GET: /no/you/never/gonna/get/it/not/this/time
+  status: 404
+  response_headers:
+      openstack-request-id: /[a-f0-9-]{36}/
+  response_strings:
+      - '"request_id": "'
