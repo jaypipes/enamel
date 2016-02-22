@@ -14,6 +14,7 @@
 import sys
 
 import flask
+import httpexceptor
 from keystonemiddleware import auth_token
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -27,6 +28,7 @@ LOG = logging.getLogger(__name__)
 
 def create_app(conf):
     app = flask.Flask(__name__)
+    _load_error_handlers(app)
     _load_request_handlers(app)
     _load_routes(app)
     # Here we work around keystone middleware's desire to be brought
@@ -64,6 +66,11 @@ def main(args=sys.argv[1:]):
                   'port': conf.api.bind_port}
 
     app.run(**app_kwargs)
+
+
+def _load_error_handlers(app):
+    app.error_handler_spec[None][None] = [(httpexceptor.HTTPException,
+                                           handlers.handle_error)]
 
 
 def _load_routes(app):

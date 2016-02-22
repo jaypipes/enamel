@@ -1,5 +1,6 @@
 Flask
 alembic
+httpexceptor>=1.4.0
 keystonemiddleware>=4.3.0
 oslo.config
 oslo.db
