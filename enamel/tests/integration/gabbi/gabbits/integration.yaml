@@ -1,0 +1,23 @@
+#
+# Live integration tests for enamel using gabbi-run.
+#
+# These presuppose a running devstack. AUTH_TOKEN is
+# a keystone token.
+
+defaults:
+    request_headers:
+        x-auth-token: $ENVIRON['AUTH_TOKEN']
+        openstack-enamel-api-version: latest
+
+tests:
+
+    - name: get the discovery
+      GET: /
+      request_headers:
+          accept: application/json
+      # NOTE(cdent): Using strings here for the moment but would be
+      # better to use jsonpaths.
+      response_strings:
+          - '"href": "$ENVIRON["ENAMEL_SERVICE_URL"]/servers",'
+
+

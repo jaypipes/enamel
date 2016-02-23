@@ -59,7 +59,7 @@ function _config_enamel_apache_wsgi {
 function enamel_service_url {
     if [ "$ENAMEL_USE_MOD_WSGI" == "True" ]; then
         echo "$ENAMEL_SERVICE_PROTOCOL://$ENAMEL_SERVICE_HOST$ENAMEL_SERVICE_PREFIX"
-    else:
+    else
         echo "$ENAMEL_SERVICE_PROTOCOL://$ENAMEL_SERVICE_HOST:$ENAMEL_SERVICE_PORT"
     fi
 }
