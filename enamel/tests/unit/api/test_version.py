@@ -83,11 +83,11 @@ class TestVersion(MockVersionedTest):
         self.assertGreater(huge_version, min_version)
 
     def test_header_is_good(self):
-        self.assertEqual('OpenStack-enamel-API-Version',
+        self.assertEqual('OpenStack-API-Version',
                          version.Version.HEADER)
 
         request_version = version.parse_version_string('latest')
-        self.assertEqual('OpenStack-enamel-API-Version',
+        self.assertEqual('OpenStack-API-Version',
                          request_version.HEADER)
 
     def test_matches_does_match(self):
@@ -127,15 +127,15 @@ class TestVersion(MockVersionedTest):
 class TestHeaderExtraction(MockVersionedTest):
 
     def test_correct_headers(self):
-        headers = {'openstack-enamel-api-version':
-                   '0.9'}
+        headers = {'openstack-api-version':
+                   'enamel 0.9'}
         request_version = version.extract_version(headers)
         self.assertEqual(version.parse_version_string('0.9'),
                          request_version)
 
     def test_valid_number_but_not_listed_version(self):
-        headers = {'openstack-enamel-api-version':
-                   '0.8'}
+        headers = {'openstack-api-version':
+                   'enamel 0.8'}
         self.assertRaises(ValueError, version.extract_version, headers)
 
     def test_missing_header(self):
@@ -144,39 +144,51 @@ class TestHeaderExtraction(MockVersionedTest):
         self.assertEqual(request_version.min_version, request_version)
 
     def test_latest_header(self):
-        headers = {'openstack-enamel-api-version':
-                   'latest'}
+        headers = {'openstack-api-version':
+                   'enamel latest'}
         request_version = version.extract_version(headers)
         self.assertEqual(request_version.max_version, request_version)
 
     def test_huge_header(self):
-        headers = {'openstack-enamel-api-version':
-                   '9999.9999'}
+        headers = {'openstack-api-version':
+                   'enamel 9999.9999'}
         self.assertRaises(ValueError, version.extract_version, headers)
 
-    def test_weird_header(self):
-        headers = {'openstack-enamel-api-version':
-                   '1.0 bottles of sangria'}
+    def test_weird_but_typed_header(self):
+        headers = {'openstack-api-version':
+                   'enamel 1.0 bottles of sangria'}
         self.assertRaises(ValueError, version.extract_version, headers)
+
+    def test_weird_untyped_header(self):
+        headers = {'openstack-api-version':
+                   '1.0 bottles of sangria'}
+        request_version = version.extract_version(headers)
+        self.assertEqual(request_version.min_version, request_version)
 
     def test_whitespacey_header(self):
-        headers = {'openstack-enamel-api-version':
-                   '  1.0         '}
+        headers = {'openstack-api-version':
+                   '   enamel  1.0         '}
         request_version = version.extract_version(headers)
         self.assertEqual(version.Version(1, 0), request_version)
 
     def test_weird_whitespacey_header(self):
-        headers = {'openstack-enamel-api-version':
-                   '  1  .   0         '}
+        headers = {'openstack-api-version':
+                   'enamel   1  .   0         '}
         request_version = version.extract_version(headers)
         self.assertEqual(version.Version(1, 0), request_version)
 
-    def test_cows_in_header(self):
-        headers = {'openstack-enamel-api-version':
+    def test_cows_in_header_no_service(self):
+        headers = {'openstack-api-version':
                    '  1  .   cow         '}
+        request_version = version.extract_version(headers)
+        self.assertEqual(request_version.min_version, request_version)
+
+    def test_cows_header_good_service(self):
+        headers = {'openstack-api-version':
+                   '  enamel     cow         '}
         self.assertRaises(ValueError, version.extract_version, headers)
 
     def test_negative_header(self):
-        headers = {'openstack-enamel-api-version':
-                   ' -1.9'}
+        headers = {'openstack-api-version':
+                   'enamel -1.9'}
         self.assertRaises(ValueError, version.extract_version, headers)

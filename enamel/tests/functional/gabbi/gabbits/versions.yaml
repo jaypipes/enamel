@@ -12,35 +12,44 @@ tests:
       request_headers:
         content-type: application/json
       response_headers:
-        vary: /OpenStack-enamel-API-Version/
-        openstack-enamel-api-version: '0.1'
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.1
+
+    - name: latest version untyped is min
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-api-version: latest
+      response_headers:
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.1
 
     - name: latest version
       GET: /
       request_headers:
         content-type: application/json
-        openstack-enamel-api-version: latest
+        openstack-api-version: enamel latest
       response_headers:
-        vary: /OpenStack-enamel-API-Version/
-        openstack-enamel-api-version: '1.0'
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 1.0
 
     - name: specific version
       GET: /
       request_headers:
         content-type: application/json
-        openstack-enamel-api-version: '1.0'
+        openstack-api-version: enamel 1.0
       response_headers:
-        vary: /OpenStack-enamel-API-Version/
-        openstack-enamel-api-version: '1.0'
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 1.0
 
     - name: invalid version number
       GET: /
       request_headers:
         content-type: application/json
-        openstack-enamel-api-version: '0.5'
+        openstack-api-version: enamel 0.5
       response_headers:
-        vary: /OpenStack-enamel-API-Version/
-        openstack-enamel-api-version: '0.1'
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.1
         content-type: application/json
       status: 406
       response_json_paths:
@@ -51,13 +60,31 @@ tests:
       GET: /
       request_headers:
         content-type: application/json
-        openstack-enamel-api-version: cow
+        openstack-api-version: enamel cow
       response_headers:
-        vary: /OpenStack-enamel-API-Version/
-        openstack-enamel-api-version: '0.1'
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.1
         content-type: application/json
       status: 406
       response_json_paths:
           $.errors[0].status: 406
           $.errors[0].title: Not Acceptable
           $.errors[0].detail: "406 Not Acceptable: unable to use provided version: invalid version string: cow"
+
+    - name: multiple version string one good
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-api-version: enamel 0.9,compute 2.11
+      response_headers:
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.9
+
+    - name: multiple version string none good
+      GET: /
+      request_headers:
+        content-type: application/json
+        openstack-api-version: identity 0.9,compute 2.11
+      response_headers:
+        vary: /OpenStack-API-Version/
+        openstack-api-version: enamel 0.1
