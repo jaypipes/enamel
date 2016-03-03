@@ -7,7 +7,7 @@
 defaults:
     request_headers:
         x-auth-token: $ENVIRON['AUTH_TOKEN']
-        openstack-enamel-api-version: latest
+        openstack-api-version: enamel latest
 
 tests:
 

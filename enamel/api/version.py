@@ -59,7 +59,7 @@ class Version(collections.namedtuple('Version', 'major minor')):
     Since it is a tuple is automatically comparable.
     """
 
-    HEADER = 'OpenStack-%s-API-Version' % SERVICE_TYPE
+    HEADER = 'OpenStack-API-Version'
 
     MIN_VERSION = None
     MAX_VERSION = None
@@ -88,8 +88,30 @@ class Version(collections.namedtuple('Version', 'major minor')):
 
 
 def extract_version(headers):
-    version_string = headers.get(Version.HEADER.lower(),
-                                 min_version_string())
+    """Extract the microversion from Version.HEADER
+
+    There may be multiple headers and some which don't match our
+    service.
+    """
+    version_string = min_version_string()
+
+    # If there are multiple matching headers we want the one at the
+    # bottom.
+    version_header = headers.get(Version.HEADER.lower())
+    if version_header:
+        version_header_values = reversed(headers.get(
+            Version.HEADER.lower(), '').split(','))
+
+        for value in version_header_values:
+            try:
+                service_type, version = value.lstrip().split(None, 1)
+            except ValueError:
+                # The header was unsplittable.
+                continue
+            if service_type.lower() == SERVICE_TYPE:
+                version_string = version
+                break
+
     request_version = parse_version_string(version_string)
     # We need a version that is in VERSION and within MIX and MAX.
     # This gives us the option to administratively disable a

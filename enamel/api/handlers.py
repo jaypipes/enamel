@@ -90,7 +90,7 @@ def send_version(response):
             response.headers['vary'] = '%s, %s' % (vary, header)
         else:
             response.headers['vary'] = header
-        response.headers[header] = value
+        response.headers[header] = '%s %s' % (version.SERVICE_TYPE, value)
     return response
 
 
