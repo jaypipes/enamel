@@ -20,6 +20,7 @@ from oslo_config import cfg
 from oslo_log import log as logging
 
 from enamel.api import handlers
+from enamel import objects
 from enamel import opts
 
 
@@ -59,6 +60,7 @@ def prepare_service(args=None):
 
 
 def main(args=sys.argv[1:]):
+    objects.register_all()
     conf = prepare_service(args)
 
     app = create_app(conf)

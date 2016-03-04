@@ -13,6 +13,18 @@
 
 import testtools
 
+from oslo_config import cfg
+from oslo_db import options as db_options
+
+from enamel.db import utils as db_utils
+
 
 class TestCase(testtools.TestCase):
     pass
+
+
+class DBTestCase(testtools.TestCase):
+    conf = cfg.ConfigOpts()
+    db_options.set_defaults(conf, connection='sqlite://')
+    conf(args=[], project='enamel')
+    db_utils.init(conf)
