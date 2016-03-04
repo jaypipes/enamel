@@ -6,6 +6,7 @@ oslo.config
 oslo.db
 oslo.log
 oslo.utils
+oslo.versionedobjects
 python-cinderclient
 python-glanceclient
 python-novaclient
