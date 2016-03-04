@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -101,3 +102,8 @@ def _load_request_handlers(app):
         handlers.send_version,
         handlers.send_request_id
     ]
+
+
+if __name__ == "__main__":
+    sys.path.insert(0, '.')
+    main()
