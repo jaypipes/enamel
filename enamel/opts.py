@@ -26,4 +26,16 @@ def list_opts():
                        default='keystone',
                        help='The authentication strategy. '
                             'Set to None to disable auth.'),
-        ))]
+        )),
+        ("task-processor", (
+            cfg.PortOpt('bind_port',
+                        default=5050,
+                        help='The port for the Enamel task processor worker.'),
+            cfg.StrOpt('bind_address',
+                       default='0.0.0.0',
+                       help='The listen IP for the Enamel task processor worker.'),
+            cfg.StrOpt('pidfile',
+                       default='/var/run/enamel-task-processor.pid',
+                       help='The path to the pidfile for the task processor daemon.'),
+        )),
+    ]
