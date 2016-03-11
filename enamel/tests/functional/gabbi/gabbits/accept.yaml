@@ -1,0 +1,26 @@
+# test accept header handling
+
+fixtures:
+- ConfigFixture
+
+tests:
+
+- name: good accept
+  GET: /
+  request_headers:
+      accept: application/json
+  status: 200
+
+- name: other good accept
+  GET: /
+  request_headers:
+      accept: application/vnd.enamel+json
+  status: 200
+
+- name: bad accept
+  GET: /
+  request_headers:
+      accept: application/xml
+  status: 406
+  response_json_paths:
+      $.errors[0].status: 406

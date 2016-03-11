@@ -20,7 +20,9 @@ from keystonemiddleware import auth_token
 from oslo_config import cfg
 from oslo_log import log as logging
 
+from enamel.api import errors
 from enamel.api import handlers
+from enamel.api import request_funcs
 from enamel import objects
 from enamel import opts
 
@@ -73,10 +75,10 @@ def main(args=sys.argv[1:]):
 
 def _load_error_handlers(app):
     app.error_handler_spec[None][None] = [(httpexceptor.HTTPException,
-                                           handlers.handle_error)]
+                                           errors.handle_error)]
     # NOTE(cdent): A special handler is required for Flask's own 404,
     # it is likely one will be needed for at least 405 too.
-    app.error_handler_spec[None][404] = handlers.handle_404
+    app.error_handler_spec[None][404] = errors.handle_404
 
 
 def _load_routes(app):
@@ -95,12 +97,12 @@ def _load_request_handlers(app):
     # before_request_funcs and after_request_funcs. This is true if
     # the before_request and after_request decorators are not used.
     app.before_request_funcs[None] = [
-        handlers.set_request_id,  # keep this first
-        handlers.set_version
+        request_funcs.set_request_id,  # keep this first
+        request_funcs.set_version
     ]
     app.after_request_funcs[None] = [
-        handlers.send_version,
-        handlers.send_request_id
+        request_funcs.send_version,
+        request_funcs.send_request_id
     ]
 
 
