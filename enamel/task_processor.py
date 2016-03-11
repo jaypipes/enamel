@@ -27,8 +27,6 @@ class TaskProcessor(object):
         self._running = False
 
     def run(self):
-        """
-        Main execution loop.
-        """
+        """Main execution loop."""
         self._running = True
         return

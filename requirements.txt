@@ -1,5 +1,4 @@
 extras
-daemon
 Flask
 alembic
 httpexceptor>=1.4.0
@@ -10,6 +9,7 @@ oslo.log
 oslo.utils
 oslo.versionedobjects
 python-cinderclient
+python-daemon
 python-glanceclient
 python-novaclient
 python-neutronclient

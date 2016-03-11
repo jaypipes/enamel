@@ -11,9 +11,10 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import argparse
 import os
-import sys
 import signal
+import sys
 
 import daemon
 import extras
@@ -48,8 +49,12 @@ class TaskProcessorApp(object):
 
     def run(self):
         self.server = enamel.task_processor.TaskProcessor(self.conf)
-        self.server.start()
+        self.server.run()
 
+        # FIXME(cdent): Though this is copied from zuul, I'm pretty
+        # sure this is wrong. KILL, TERM, INT might all make sense.
+        # USR1 is usually reserved for special user initiated
+        # actions like dumping a guru meditation report.
         signal.signal(signal.SIGUSR1, self.exit_handler)
         while True:
             try:
@@ -80,7 +85,7 @@ def main():
     app = TaskProcessorApp(conf)
     args = app.parse_arguments()
 
-    pid_path = os.path.expanduser(config.task_processor.pidfile)
+    pid_path = os.path.expanduser(conf.task_processor.pidfile)
     pid = pid_file_module.TimeoutPIDLockFile(pid_path, 10)
 
     if args.no_daemon:

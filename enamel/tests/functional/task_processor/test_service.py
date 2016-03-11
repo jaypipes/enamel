@@ -14,12 +14,14 @@
 
 import testtools
 
-from enamel.cmd import task_processor
+# from enamel.cmd import task_processor
 
 
 class TestService(testtools.TestCase):
 
-    def test_service_start(self):
-        runner = task_processor.TaskProcessorApp()
-        runner.run()
-        self.assertTrue(runner.server.is_running())
+    pass
+    # FIXME(cdent): This test, in its current form, will run forever.
+    # def test_service_start(self):
+    #     runner = task_processor.TaskProcessorApp()
+    #     runner.run()
+    #     self.assertTrue(runner.server.is_running())

@@ -57,7 +57,7 @@ class BaseConfigFixture(fixture.GabbiFixture):
     def _manage_conf(self):
         from enamel.cmd import api
         global CONF
-        conf = main.prepare_service()
+        conf = api.prepare_service()
         CONF = self.conf = conf
 
     def stop_fixture(self):
