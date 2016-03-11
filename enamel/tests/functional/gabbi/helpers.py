@@ -32,9 +32,9 @@ CONF = None
 
 
 def setup_app():
-    from enamel import main
+    from enamel.cmd import api
     global CONF
-    return main.create_app(CONF)
+    return api.create_app(CONF)
 
 
 class BaseConfigFixture(fixture.GabbiFixture):
@@ -55,7 +55,7 @@ class BaseConfigFixture(fixture.GabbiFixture):
         self.conf.set_override('use_stderr', True)
 
     def _manage_conf(self):
-        from enamel import main
+        from enamel.cmd import api
         global CONF
         conf = main.prepare_service()
         CONF = self.conf = conf
