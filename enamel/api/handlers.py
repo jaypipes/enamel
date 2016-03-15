@@ -16,7 +16,7 @@ import re
 
 import flask
 
-from enamel.api.decorators import accept
+from enamel.api import decorators
 
 
 def create_link_object(urls):
@@ -37,7 +37,7 @@ def generate_resource_data(resources):
     return data
 
 
-@accept()
+@decorators.accept()
 def home():
     pat = re.compile("^\/[^\/]*?$")
 
