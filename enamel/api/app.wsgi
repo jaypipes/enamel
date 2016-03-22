@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enamel import main
+from enamel.cmd import api
 
 # Initialize the oslo configuration library and logging
-conf = main.prepare_service()
-application = main.create_app(conf)
+conf = api.prepare_service()
+application = api.create_app(conf)
