@@ -14,6 +14,8 @@
 
 import collections
 
+import microversion_parse
+
 # TODO(cdent): Get a real one, get it from config or other source of
 # defaults.
 SERVICE_TYPE = 'enamel'
@@ -93,25 +95,10 @@ def extract_version(headers):
     There may be multiple headers and some which don't match our
     service.
     """
-    version_string = min_version_string()
+    found_version = microversion_parse.get_version(headers,
+                                                   service_type=SERVICE_TYPE)
 
-    # If there are multiple matching headers we want the one at the
-    # bottom.
-    version_header = headers.get(Version.HEADER.lower())
-    if version_header:
-        version_header_values = reversed(headers.get(
-            Version.HEADER.lower(), '').split(','))
-
-        for value in version_header_values:
-            try:
-                service_type, version = value.lstrip().split(None, 1)
-            except ValueError:
-                # The header was unsplittable.
-                continue
-            if service_type.lower() == SERVICE_TYPE:
-                version_string = version
-                break
-
+    version_string = found_version or min_version_string()
     request_version = parse_version_string(version_string)
     # We need a version that is in VERSION and within MIX and MAX.
     # This gives us the option to administratively disable a
