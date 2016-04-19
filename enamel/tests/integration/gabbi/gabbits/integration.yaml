@@ -15,9 +15,7 @@ tests:
       GET: /
       request_headers:
           accept: application/json
-      # NOTE(cdent): Using strings here for the moment but would be
-      # better to use jsonpaths.
-      response_strings:
-          - '"href": "$ENVIRON["ENAMEL_SERVICE_URL"]/servers",'
+      response_json_paths:
+          $.resources[?name = "servers"].links[?rel = "self"].href: $SCHEME://$NETLOC/servers
 
 
