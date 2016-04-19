@@ -23,3 +23,4 @@ def register_all():
     # function in order for it to be registered by services that may
     # need to receive it via RPC.
     __import__('enamel.objects.task')
+    __import__('enamel.objects.task_item')
