@@ -7,6 +7,8 @@ tests:
 
 - name: request id present
   GET: /
+  request_headers:
+      accept: application/json
   response_headers:
       openstack-request-id: /[a-f0-9-]{36}/
 

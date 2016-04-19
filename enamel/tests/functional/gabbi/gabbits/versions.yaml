@@ -10,7 +10,7 @@ tests:
       desc: no header sent
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
       response_headers:
         vary: /OpenStack-API-Version/
         openstack-api-version: enamel 0.1
@@ -18,7 +18,7 @@ tests:
     - name: latest version untyped is min
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: latest
       response_headers:
         vary: /OpenStack-API-Version/
@@ -27,7 +27,7 @@ tests:
     - name: latest version
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: enamel latest
       response_headers:
         vary: /OpenStack-API-Version/
@@ -36,7 +36,7 @@ tests:
     - name: specific version
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: enamel 1.0
       response_headers:
         vary: /OpenStack-API-Version/
@@ -45,7 +45,7 @@ tests:
     - name: invalid version number
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: enamel 0.5
       response_headers:
         vary: /OpenStack-API-Version/
@@ -59,7 +59,7 @@ tests:
     - name: invalid version string
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: enamel cow
       response_headers:
         vary: /OpenStack-API-Version/
@@ -74,7 +74,7 @@ tests:
     - name: multiple version string one good
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: enamel 0.9,compute 2.11
       response_headers:
         vary: /OpenStack-API-Version/
@@ -83,7 +83,7 @@ tests:
     - name: multiple version string none good
       GET: /
       request_headers:
-        content-type: application/json
+        accept: application/json
         openstack-api-version: identity 0.9,compute 2.11
       response_headers:
         vary: /OpenStack-API-Version/
