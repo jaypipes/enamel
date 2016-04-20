@@ -17,6 +17,7 @@ from oslo_versionedobjects import fields
 from enamel.db import models as db_models
 from enamel.db import utils as db_utils
 from enamel.objects import base
+from enamel.objects import exception as obj_exception
 
 
 @ovo_base.VersionedObjectRegistry.register
@@ -50,7 +51,8 @@ class Task(base.EnamelTimestampObject, base.EnamelObject):
         session = db_utils.get_session()
         db_task = session.query(db_models.Task).filter_by(uuid=uuid).first()
 
-        # TODO(alaski): raise exception if db_task not found
+        if not db_task:
+            raise obj_exception.TaskNotFound(uuid=uuid)
         return db_task
 
     @classmethod

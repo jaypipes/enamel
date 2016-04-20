@@ -14,6 +14,7 @@
 
 from oslo_utils import uuidutils
 
+from enamel.objects import exception as obj_exception
 from enamel.objects import task
 from enamel.objects import task_item
 from enamel.tests import fixtures
@@ -56,3 +57,9 @@ class TaskItemTestCase(test_base.DBTestCase):
                 tsk_item['uuid'])
         for field in task_item.TaskItem.fields.keys():
             self.assertEqual(tsk_item[field], db_task_item[field])
+
+    def test_get_by_uuid_not_found(self):
+        uuid = uuidutils.generate_uuid()
+        self.assertRaisesRegexp(obj_exception.TaskItemNotFound,
+                                'TaskItem %s' % uuid,
+                                task_item.TaskItem._get_by_uuid_from_db, uuid)
